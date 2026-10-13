@@ -16,14 +16,12 @@ import com.android.tools.smali.dexlib2.Opcode
 
 internal object NewElementProtoParserFingerprint : Fingerprint(
     classFingerprint = ProtoStuffReflectionFingerprint,
+    isStatic = true,
     parameters = listOf("L"),
     returnType = "[B",
     filters = listOf(
         checkCast("[B")
-    ),
-    custom = { method, _ ->
-        AccessFlags.STATIC.isSet(method.accessFlags)
-    }
+    )
 )
 
 private object ProtoStuffReflectionFingerprint : Fingerprint(

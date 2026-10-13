@@ -29,6 +29,7 @@ internal object MiniAppOpenYtContentCommandEndpointFingerprint : Fingerprint(
             )
         )
     ),
+    isStatic = false,
     returnType = "V",
     filters = listOf(
         opcode(Opcode.CHECK_CAST),
@@ -41,11 +42,10 @@ internal object MiniAppOpenYtContentCommandEndpointFingerprint : Fingerprint(
     ),
     strings = listOf("no error message"),
     custom = { method, _ ->
-        !AccessFlags.STATIC.isSet(method.accessFlags) &&
-                parametersMatch(
-                    method.parameters,
-                    listOf("L")
-                ) || parametersMatch(
+        parametersMatch(
+            method.parameters,
+            listOf("L")
+        ) || parametersMatch(
             method.parameters,
             listOf("L", "Ljava/util/Map;") // 21.30+
         )

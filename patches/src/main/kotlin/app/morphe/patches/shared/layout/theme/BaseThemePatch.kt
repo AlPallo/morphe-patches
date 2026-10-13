@@ -29,7 +29,6 @@ import app.morphe.util.inputStreamFromBundledResource
 import app.morphe.util.matchAllMethodIndicesForEach
 import app.morphe.util.returnEarly
 import app.morphe.util.setExtensionIsPatchIncluded
-import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
 import java.util.Locale
 import kotlin.math.PI
@@ -342,10 +341,8 @@ private val themeColorContextHookPatch = bytecodePatch {
     execute {
         Fingerprint(
             name = "attachBaseContext",
-            parameters = listOf("Landroid/content/Context;"),
-            custom = { method, _ ->
-                !AccessFlags.STATIC.isSet(method.accessFlags)
-            }
+            isStatic = false,
+            parameters = listOf("Landroid/content/Context;")
         ).matchAll().forEach {
             it.method.addInstructions(
                 0,

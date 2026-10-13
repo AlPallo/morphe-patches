@@ -271,10 +271,11 @@ val crossfadePatch = bytecodePatch(
             val sleepTimerStateType = SleepTimerStateFingerprint.classDef.type
             // The UI also has a (state)V method, the timer manager is the class with the getter too.
             Fingerprint(
+                isStatic = false,
                 returnType = "V",
                 parameters = listOf(sleepTimerStateType),
-                custom = { method, classDef ->
-                    !AccessFlags.STATIC.isSet(method.accessFlags) && classDef.methods.any {
+                custom = { _, classDef ->
+                    classDef.methods.any {
                         it.parameterTypes.isEmpty() && it.returnType == sleepTimerStateType
                     }
                 }
@@ -1116,14 +1117,14 @@ val crossfadePatch = bytecodePatch(
 
         val setStateMethodFingerprint = Fingerprint(
             definingClass = stateProviderClass.type,
+            isStatic = false,
             returnType = "V",
             parameters = listOf(stateType),
             filters = listOf(
                 opcode((Opcode.IGET_OBJECT))
             ),
             custom = { method, _ ->
-                !AccessFlags.STATIC.isSet(method.accessFlags) &&
-                        !AccessFlags.CONSTRUCTOR.isSet(method.accessFlags)
+                !AccessFlags.CONSTRUCTOR.isSet(method.accessFlags)
             }
         )
         val setStateMethod = setStateMethodFingerprint.method
