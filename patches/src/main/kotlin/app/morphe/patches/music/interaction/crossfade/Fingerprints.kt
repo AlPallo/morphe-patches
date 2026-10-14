@@ -9,13 +9,17 @@
 package app.morphe.patches.music.interaction.crossfade
 
 import app.morphe.patcher.Fingerprint
+import app.morphe.patcher.StringComparisonType
 import app.morphe.patcher.methodCall
 import app.morphe.patcher.opcode
+import app.morphe.patcher.string
 import com.android.tools.smali.dexlib2.Opcode
 
 internal object StopVideoFingerprint : Fingerprint(
     returnType = "V",
-    strings = listOf("stopVideo", "MedialibPlayer.stopVideo")
+    strings = listOf(
+        string("MedialibPlayer.stopVideo()", StringComparisonType.STARTS_WITH)
+    )
 )
 
 internal object PlayNextInQueueFingerprint : Fingerprint(
@@ -33,7 +37,9 @@ internal object AudioVideoToggleFingerprint : Fingerprint(
 
 internal object PauseVideoFingerprint : Fingerprint(
     returnType = "V",
-    strings = listOf("pauseVideo", "MedialibPlayer.pauseVideo()")
+    strings = listOf(
+        string("MedialibPlayer.pauseVideo()", StringComparisonType.STARTS_WITH)
+    )
 )
 
 internal object PlayVideoFingerprint : Fingerprint(
