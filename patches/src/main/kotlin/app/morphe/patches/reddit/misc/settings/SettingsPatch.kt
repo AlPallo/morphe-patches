@@ -70,14 +70,12 @@ val settingsPatch = bytecodePatch(
             execute {
                 if (is_2026_25_0_or_greater) {
                     // Change menu item title to Morphe.
-                    get("res").walk().forEach { file ->
-                        if ("strings.xml" == file.name) {
-                            document(file.absolutePath).use { document ->
-                                document.documentElement.childNodes.findElementByAttributeValue(
-                                    "name",
-                                    "label_privacy_policy"
-                                )?.textContent = "Morphe"
-                            }
+                    decode("res/values*/strings.xml").forEach { path ->
+                        document(path).use { document ->
+                            document.documentElement.childNodes.findElementByAttributeValue(
+                                "name",
+                                "label_privacy_policy"
+                            )?.textContent = "Morphe"
                         }
                     }
                 }

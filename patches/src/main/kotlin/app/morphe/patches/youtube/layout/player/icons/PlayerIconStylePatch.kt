@@ -251,11 +251,15 @@ private val appSkipSelectors = listOf(
     "player_prev" to "SkipPrevious",
 )
 
-// Every configuration of a resource type, such as drawable-xxhdpi for drawable.
-private fun ResourcePatchContext.resourceDirectories(type: String) =
-    get("res", false).listFiles { file ->
+// Every configuration of a resource type, such as drawable-xxhdpi for drawable,
+// with the files of the name in them decoded. The name can use wildcards.
+private fun ResourcePatchContext.resourceDirectories(type: String, fileName: String): Array<out File> {
+    decode("res/$type*/$fileName")
+
+    return get("res", false).listFiles { file ->
         file.isDirectory && file.name.startsWith(type)
     }.orEmpty()
+}
 
 /**
  * Replaces an app icon that exists only as density specific bitmaps with a wrapper.
@@ -269,7 +273,7 @@ internal fun ResourcePatchContext.wrapAppBitmapIcon(
     wrapperClass: String,
     originalName: String? = null,
 ): Boolean {
-    val bitmaps = resourceDirectories("drawable").flatMap { directory ->
+    val bitmaps = resourceDirectories("drawable", "$appName.*").flatMap { directory ->
         listOf("png", "webp").map { extension -> directory.resolve("$appName.$extension") }
     }.filter { it.exists() }
     if (bitmaps.isEmpty()) return false
@@ -302,7 +306,7 @@ private fun appPlayerIconWrapper(wrapperClass: String, appIcon: String? = null):
  * The wrapper gets the app icon as android:drawable, since the icon differs per screen size.
  */
 private fun ResourcePatchContext.wrapAppSelectorIcons(selectorName: String, wrapperClass: String) {
-    resourceDirectories("drawable").filter { it.resolve("$selectorName.xml").exists() }.forEach { directory ->
+    resourceDirectories("drawable", "$selectorName.xml").filter { it.resolve("$selectorName.xml").exists() }.forEach { directory ->
         document("res/${directory.name}/$selectorName.xml").use { document ->
             val items = document.getElementsByTagName("item")
             for (i in 0 until items.length) {
@@ -557,7 +561,7 @@ val playerIconStylePatch = resourcePatch(
         // Without the bold player the settings button keeps the gear of its layout, which other screens share,
         // so only the button points to a wrapper. The wrapper keeps whatever icon the layout had.
         var settingsIcon: String? = null
-        resourceDirectories("layout")
+        resourceDirectories("layout", "*")
             .flatMap { it.listFiles().orEmpty().toList() }
             .filter { it.readText().contains("\"@id/player_overflow_button\"") }
             .forEach { layout ->
