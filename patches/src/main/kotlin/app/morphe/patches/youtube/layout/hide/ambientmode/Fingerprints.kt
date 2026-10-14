@@ -21,6 +21,7 @@ internal object AmbientModeFeatureFlagFingerprint : Fingerprint(
 )
 
 internal object IntentActionBroadcastReceiverFingerprint : Fingerprint(
+    superclass = "Landroid/content/BroadcastReceiver;",
     name = "onReceive",
     returnType = "V",
     parameters = listOf(
@@ -33,10 +34,9 @@ internal object IntentActionBroadcastReceiverFingerprint : Fingerprint(
         opcode(Opcode.INVOKE_DIRECT)
     ),
     custom = { _, classDef ->
-        classDef.superclass == "Landroid/content/BroadcastReceiver;"
-                // There are two classes that inherit [BroadcastReceiver].
-                // Check the method count to find the correct class.
-                && classDef.methods.count() == 2
+        // There are two classes that inherit [BroadcastReceiver].
+        // Check the method count to find the correct class.
+        classDef.methods.count() == 2
     }
 )
 
@@ -55,11 +55,11 @@ internal object IntentActionBroadcastReceiverAlternativeFingerprint : Fingerprin
         string(POWER_SAVE_MODE_CHANGED),
         opcode(Opcode.INVOKE_DIRECT)
     ),
+    superclass = "Landroid/content/BroadcastReceiver;",
     custom = { _, classDef ->
-        classDef.superclass == "Landroid/content/BroadcastReceiver;"
-                // There are two classes that inherit [BroadcastReceiver].
-                // Check the method count to find the correct class.
-                && classDef.methods.count() == 2
+        // There are two classes that inherit [BroadcastReceiver].
+        // Check the method count to find the correct class.
+        classDef.methods.count() == 2
     }
 )
 

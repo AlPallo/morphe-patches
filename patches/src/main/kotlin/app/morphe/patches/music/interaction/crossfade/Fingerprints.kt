@@ -51,10 +51,8 @@ internal object PlayVideoFingerprint : Fingerprint(
  * A synthetic Runnable also logs with the "ExoPlayerImpl" tag, so the interface check is required.
  */
 internal object ExoPlayerImplFingerprint : Fingerprint(
-    strings = listOf("ExoPlayerImpl"),
-    custom = { _, classDef ->
-        classDef.interfaces.contains("Landroidx/media3/exoplayer/ExoPlayer;")
-    }
+    interfaces = listOf("Landroidx/media3/exoplayer/ExoPlayer;"),
+    strings = listOf("ExoPlayerImpl")
 )
 
 internal object LoadVideoFingerprint : Fingerprint(

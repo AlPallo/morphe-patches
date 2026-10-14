@@ -387,10 +387,10 @@ val crossfadePatch = bytecodePatch(
 
         val sharedStateClass = if (AccessFlags.INTERFACE.isSet(sharedStateInterfaceClass.accessFlags)) {
             Fingerprint(
+                interfaces = listOf(sharedStateFieldRef.type),
                 custom = { _, classDef ->
                     !AccessFlags.INTERFACE.isSet(classDef.accessFlags)
                             && !AccessFlags.ABSTRACT.isSet(classDef.accessFlags)
-                            && sharedStateFieldRef.type in classDef.interfaces
                 }
             ).classDef
         } else {

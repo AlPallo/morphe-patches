@@ -51,6 +51,7 @@ internal object BuildInitPlaybackRequestFingerprint : Fingerprint(
  * used by the native player for its own requests such as the Onesie /initplayback request.
  */
 internal object NativeNetFetchFingerprint : Fingerprint(
+    superclass = "Lcom/google/android/libraries/youtube/media/interfaces/NetFetch;",
     returnType = "Lcom/google/android/libraries/youtube/media/interfaces/NetFetchTask;",
     parameters = listOf(
         "Lcom/google/android/libraries/youtube/media/interfaces/HttpRequest;",
@@ -61,10 +62,7 @@ internal object NativeNetFetchFingerprint : Fingerprint(
             definingClass = "Lorg/chromium/net/CronetEngine;",
             name = "newUrlRequestBuilder"
         )
-    ),
-    custom = { _, classDef ->
-        classDef.superclass == "Lcom/google/android/libraries/youtube/media/interfaces/NetFetch;"
-    }
+    )
 )
 
 private object CreateStreamingDataParentFingerprint : Fingerprint(
