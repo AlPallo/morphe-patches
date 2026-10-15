@@ -27,7 +27,6 @@ import app.morphe.util.copyResources
 import app.morphe.util.findFreeRegister
 import app.morphe.util.getReference
 import app.morphe.util.indexOfFirstInstructionOrThrow
-import app.morphe.util.indexOfFirstInstructionReversedOrThrow
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
@@ -69,13 +68,8 @@ val channelSearchPatch = bytecodePatch(
         // A channel page browses by its channel id, which is what the search is scoped to.
         BrowseFragmentOnCreateViewFingerprint.let {
             it.method.apply {
-                val browseDataIndex = it.instructionMatches.first().index
-
                 // The endpoint of the page is read just before it is checked for browse data.
-                val endpointIndex = indexOfFirstInstructionReversedOrThrow(
-                    browseDataIndex,
-                    fieldAccess(opcode = Opcode.IGET_OBJECT, definingClass = "this")
-                )
+                val endpointIndex = it.instructionMatches[1].index
                 val endpointField = getInstruction<ReferenceInstruction>(endpointIndex)
                     .getReference<FieldReference>()!!
 

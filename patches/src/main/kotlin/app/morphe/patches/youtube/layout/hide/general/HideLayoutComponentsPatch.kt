@@ -758,16 +758,7 @@ val hideLayoutComponentsPatch = bytecodePatch(
 
         PanelSubheaderFingerprint.let {
             it.method.apply {
-                val removeAllViewsIndex = indexOfFirstInstructionReversedOrThrow {
-                    opcode == Opcode.INVOKE_VIRTUAL &&
-                            getReference<MethodReference>()?.name == "removeAllViews"
-                }
-
-                val setVisibilityIndex = indexOfFirstInstructionOrThrow(removeAllViewsIndex) {
-                    opcode == Opcode.INVOKE_VIRTUAL &&
-                            getReference<MethodReference>()?.name == "setVisibility"
-                }
-
+                val setVisibilityIndex = it.instructionMatches.last().index
                 val subheaderRegister = getInstruction<FiveRegisterInstruction>(setVisibilityIndex).registerC
 
                 addInstruction(

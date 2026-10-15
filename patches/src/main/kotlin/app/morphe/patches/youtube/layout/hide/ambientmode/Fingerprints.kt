@@ -1,6 +1,7 @@
 package app.morphe.patches.youtube.layout.hide.ambientmode
 
 import app.morphe.patcher.Fingerprint
+import app.morphe.patcher.InstructionLocation.MatchAfterLast
 import app.morphe.patcher.anyInstruction
 import app.morphe.patcher.checkCast
 import app.morphe.patcher.literal
@@ -108,5 +109,8 @@ internal object SetFullScreenBackgroundColorFingerprint : Fingerprint(
     name = "onLayout",
     accessFlags = listOf(AccessFlags.PROTECTED, AccessFlags.FINAL),
     returnType = "V",
-    parameters = listOf("Z", "I", "I", "I", "I")
+    parameters = listOf("Z", "I", "I", "I", "I"),
+    filters = listOf(
+        methodCall(name = "setBackgroundColor", location = MatchAfterLast())
+    )
 )
