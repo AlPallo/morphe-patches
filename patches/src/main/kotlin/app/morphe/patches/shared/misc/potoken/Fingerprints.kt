@@ -9,6 +9,7 @@ package app.morphe.patches.shared.misc.potoken
 
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.InstructionLocation.MatchAfterWithin
+import app.morphe.patcher.checkCast
 import app.morphe.patcher.methodCall
 import app.morphe.patcher.string
 import com.android.tools.smali.dexlib2.AccessFlags
@@ -44,9 +45,9 @@ internal object NetFetchStartFetchTaskFingerprint : Fingerprint(
     accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.FINAL),
     returnType = "${MEDIA_INTERFACES}NetFetchTask;",
     parameters = listOf(HTTP_REQUEST_CLASS_TYPE, "${MEDIA_INTERFACES}NetFetchCallbacks;"),
-    custom = { _, classDef ->
-        !classDef.type.endsWith($$"$CppProxy;")
-    }
+    filters = listOf(
+        checkCast("Ljava/util/concurrent/ScheduledExecutorService;")
+    )
 )
 
 /**
