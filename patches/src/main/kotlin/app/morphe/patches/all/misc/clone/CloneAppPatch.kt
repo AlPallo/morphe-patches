@@ -37,6 +37,8 @@ import app.morphe.patcher.patch.booleanOption
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.patch.resourcePatch
 import app.morphe.patcher.patch.stringOption
+import app.morphe.patches.util.resource.editText
+import app.morphe.patches.util.resource.transformStringResources
 import app.morphe.util.asSequence
 import app.morphe.util.findElementByAttributeValue
 import app.morphe.util.findInstructionIndicesReversedOrThrow
@@ -263,18 +265,12 @@ val cloneAppPatch = resourcePatch(
         }
 
         if (providerStringResources.isNotEmpty()) {
-            document("res/values/strings.xml").use { document ->
-                val children = document.documentElement.childNodes
-                for (i in 0 until children.length) {
-                    val node = children.item(i) as? Element ?: continue
-
-                    if (node.getAttribute("name") in providerStringResources) {
-                        val authority = node.textContent
-                        node.textContent = if (authority.startsWith("$packageName.")) {
-                            authority.replaceFirst(packageName, newPackageName)
-                        } else {
-                            "${newPackageName}_$authority"
-                        }
+            this["res/values/strings.xml"].editText { text ->
+                text.transformStringResources(providerStringResources) { authority ->
+                    if (authority.startsWith("$packageName.")) {
+                        authority.replaceFirst(packageName, newPackageName)
+                    } else {
+                        "${newPackageName}_$authority"
                     }
                 }
             }
