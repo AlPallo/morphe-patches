@@ -33,6 +33,7 @@ internal object EndpointServiceNameFingerprint : Fingerprint(
 )
 
 internal object DislikeFingerprint : Fingerprint(
+    accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.CONSTRUCTOR),
     returnType = "V",
     filters = listOf(
         string("like/dislike")

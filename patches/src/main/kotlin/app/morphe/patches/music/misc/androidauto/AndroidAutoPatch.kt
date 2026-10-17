@@ -27,7 +27,6 @@ import app.morphe.util.cloneMutable
 import app.morphe.util.findFreeRegister
 import app.morphe.util.findMutableMethodOf
 import app.morphe.util.getReference
-import app.morphe.util.matchSingle
 import app.morphe.util.p0Register
 import app.morphe.util.returnEarly
 import app.morphe.util.toPublicAccessFlags
@@ -755,7 +754,7 @@ private fun BytecodePatchContext.hookAndroidAutoPlaylistsRequest(
         definingClass = androidAutoRequestHandlerType,
         returnType = "V",
         parameters = listOf(androidAutoRequestType)
-    ).matchSingle().method.addInstructionsWithLabels(
+    ).method.addInstructionsWithLabels(
         0,
         """
             invoke-static/range { p1 .. p1 }, $EXTENSION_CLASS->handleAndroidAutoPlaylists($EXTENSION_ANDROID_AUTO_BROWSE_REQUEST_INTERFACE)Z

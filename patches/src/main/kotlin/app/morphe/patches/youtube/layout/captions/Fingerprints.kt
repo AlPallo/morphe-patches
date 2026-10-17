@@ -16,7 +16,9 @@ import app.morphe.patcher.literal
 import app.morphe.patcher.methodCall
 import app.morphe.patcher.newInstance
 import app.morphe.patcher.opcode
+import app.morphe.patcher.patch.BytecodePatchContext
 import app.morphe.patcher.string
+import app.morphe.patches.youtube.misc.playservice.is_21_20_or_greater
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
@@ -288,6 +290,21 @@ internal object DefaultCaptionTrackFingerprint : Fingerprint(
     parameters = listOf(),
     filters = listOf(
         methodCall("Landroid/view/accessibility/CaptioningManager;->isEnabled()Z"),
+    )
+)
+
+context(patchContext: BytecodePatchContext)
+internal fun preferredCaptionsTrackFingerprint() = Fingerprint(
+    classFingerprint = DefaultCaptionTrackFingerprint,
+    // FIXME? This originally matched two different methods in same class.
+    parameters = if (is_21_20_or_greater) { // Version range is an estimate and may not be exact.
+        listOf("L", "L")
+    } else {
+        listOf()
+    },
+    filters = listOf(
+        methodCall(reference = DefaultCaptionTrackFingerprint.method),
+        opcode(Opcode.MOVE_RESULT_OBJECT, location = MatchAfterImmediately())
     )
 )
 

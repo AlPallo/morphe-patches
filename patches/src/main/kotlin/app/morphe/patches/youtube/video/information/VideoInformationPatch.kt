@@ -348,7 +348,7 @@ val videoInformationPatch = bytecodePatch(
 
         PlaybackSpeedMenuSpeedChangedFingerprint.let {
             it.method.apply {
-                val index = it.instructionMatches.first().index
+                val index = it.instructionMatches.last().index
 
                 speedSelectionInsertMethodRef = WeakReference(this)
                 speedSelectionInsertIndex = index + 1
@@ -515,7 +515,12 @@ val videoInformationPatch = bytecodePatch(
                 """
             } else ""
 
-            it.classDef.apply {
+            val classDef = matches.first().classDef
+            if (matches.any { match -> match.originalClassDef.type != classDef.type }) {
+                throw PatchException("Expected all matches to be in the same class: $it")
+            }
+
+            classDef.apply {
                 val helperMethod = ImmutableMethod(
                     type,
                     "setChannelInformation",

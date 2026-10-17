@@ -77,10 +77,10 @@ val channelSearchPatch = bytecodePatch(
                 val browseDataExtensionIndex = indexOfFirstInstructionOrThrow(
                     endpointIndex, Opcode.SGET_OBJECT
                 )
-                val browseDataExtensionField =
-                    getInstruction<ReferenceInstruction>(browseDataExtensionIndex)
+                val browseDataExtensionField = getInstruction<ReferenceInstruction>(browseDataExtensionIndex)
                         .getReference<FieldReference>()!!
 
+                // Matches two 100% identical methods in the same class, either method works here.
                 val browseIdMethod = Fingerprint(
                     accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.STATIC),
                     returnType = "Ljava/lang/String;",
@@ -88,7 +88,7 @@ val channelSearchPatch = bytecodePatch(
                     filters = listOf(
                         fieldAccess(opcode = Opcode.SGET_OBJECT, reference = browseDataExtensionField)
                     )
-                ).method
+                ).matchAll(1..2).first().method
 
                 // The fragment is handed the endpoint of every page it shows, including a page that
                 // is returned to and served from cache, which makes no browse request to read.
