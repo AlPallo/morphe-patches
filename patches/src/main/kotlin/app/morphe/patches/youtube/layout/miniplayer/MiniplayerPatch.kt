@@ -439,6 +439,47 @@ val miniplayerPatch = bytecodePatch(
 
         // endregion
 
+        // region Watch transition animation.
+
+        // The server can tell the app to skip the animation between the miniplayer and the
+        // maximized player, and then the player jumps between them.
+        AnimationMaybeAnimateFingerprint.let {
+            it.method.apply {
+                val index = it.instructionMatches[1].index
+                val decisionRegister = getInstruction<OneRegisterInstruction>(index).registerA
+                val categoryField = AnimationDecisionForCategoryFingerprint.instructionMatches[1]
+                    .getInstruction<ReferenceInstruction>().reference
+                val free = findFreeRegister(index + 1, decisionRegister)
+
+                addInstructions(
+                    index + 1,
+                    """
+                        iget v$free, p1, $categoryField
+                        invoke-static { v$free, v$decisionRegister }, $EXTENSION_CLASS->getAnimationDecision(II)I
+                        move-result v$decisionRegister
+                    """
+                )
+            }
+        }
+
+        // The feed behind the maximized player is gone, so it is not laid out again when the
+        // screen rotates in fullscreen. After the player is minimized the feed is then black
+        // until it is laid out again. An invisible feed is laid out but not drawn.
+        NextGenWatchContainerLayoutChildrenVisibilityFingerprint.let {
+            it.method.apply {
+                val index = it.instructionMatches.last().index
+                val instruction = getInstruction<FiveRegisterInstruction>(index)
+
+                replaceInstruction(
+                    index,
+                    "invoke-static { v${instruction.registerC}, v${instruction.registerD} }, " +
+                            "$EXTENSION_CLASS->setContentBehindPlayerVisibility(Landroid/view/View;Z)V"
+                )
+            }
+        }
+
+        // endregion
+
         if (!is_21_30_or_greater) {
             MiniplayerModernConstructorFingerprint.insertMiniplayerFeatureFlagBooleanOverride(
                 MINIPLAYER_ANIMATED_EXPAND_FEATURE_KEY,

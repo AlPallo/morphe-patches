@@ -86,6 +86,36 @@ internal object MiniplayerDragAndDropFingerprint : Fingerprint(
     )
 )
 
+/**
+ * YouTube's adaptive animation helper, which looks up whether an animation category
+ * is on, throttled or off in a map the server sends.
+ */
+internal object AnimationDecisionForCategoryFingerprint : Fingerprint(
+    returnType = "L",
+    parameters = listOf("L"),
+    filters = listOf(
+        // Has-bits of the category hint.
+        fieldAccess(opcode = Opcode.IGET, type = "I"),
+        // The animation category.
+        fieldAccess(opcode = Opcode.IGET, type = "I", location = MatchAfterWithin(5)),
+        string("#getAnimationDecisionForCategory: no category provided")
+    )
+)
+
+/**
+ * Runs the animation only if the decision of its category allows it.
+ */
+internal object AnimationMaybeAnimateFingerprint : Fingerprint(
+    returnType = "I",
+    parameters = listOf("L", "L"),
+    filters = listOf(
+        // Ordinal of the animation decision.
+        methodCall(name = "ordinal", returnType = "I"),
+        opcode(Opcode.MOVE_RESULT, location = MatchAfterImmediately()),
+        string("#maybeAnimate: no animation run")
+    )
+)
+
 internal object MiniplayerAnimatedExpandFingerprint : Fingerprint(
     accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.FINAL),
     returnType = "V",
@@ -222,6 +252,34 @@ internal object NextGenWatchLayoutOnInterceptTouchEventFingerprint : Fingerprint
     definingClass = "Lcom/google/android/apps/youtube/app/watch/nextgenwatch/ui/NextGenWatchLayout;",
     name = "onInterceptTouchEvent",
     parameters = listOf("Landroid/view/MotionEvent;")
+)
+
+/**
+ * Shows the views behind the player, such as the feed, when the player is minimized,
+ * and hides them when the player is maximized.
+ */
+internal object NextGenWatchContainerLayoutChildrenVisibilityFingerprint : Fingerprint(
+    definingClass = "Lcom/google/android/apps/youtube/app/watch/nextgenwatch/ui/NextGenWatchContainerLayout;",
+    returnType = "V",
+    parameters = listOf(),
+    filters = listOf(
+        methodCall(
+            definingClass = "Landroid/view/View;",
+            name = "getVisibility"
+        ),
+        literal(8), // View.GONE
+        methodCall( // Views that stay gone once hidden.
+            opcode = Opcode.INVOKE_STATIC,
+            parameters = listOf("Landroid/view/View;", "Z"),
+            returnType = "V"
+        ),
+        methodCall( // Other views, such as the feed.
+            opcode = Opcode.INVOKE_STATIC,
+            parameters = listOf("Landroid/view/View;", "Z"),
+            returnType = "V",
+            location = MatchAfterWithin(6)
+        )
+    )
 )
 
 private object MiniplayerDimensionsCalculatorParentFingerprint : Fingerprint(
