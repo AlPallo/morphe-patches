@@ -14,6 +14,8 @@ import static app.morphe.extension.shared.StringRef.str;
 
 import androidx.annotation.NonNull;
 
+import java.util.Map;
+
 import app.morphe.extension.shared.Logger;
 import app.morphe.extension.shared.Utils;
 import app.morphe.extension.shared.settings.BooleanSetting;
@@ -31,6 +33,17 @@ public class RememberVideoQualityPatch {
     private static final IntegerSetting videoQualityMobile = Settings.VIDEO_QUALITY_DEFAULT_MOBILE;
     private static final IntegerSetting shortsQualityWifi = Settings.SHORTS_QUALITY_DEFAULT_WIFI;
     private static final IntegerSetting shortsQualityMobile = Settings.SHORTS_QUALITY_DEFAULT_MOBILE;
+
+    /**
+     * Resolution the user last selected, and the video it was selected for.
+     */
+    private static volatile int userSelectedResolution = -1;
+    private static volatile String userSelectedVideoId = "";
+
+    private static void setUserSelectedResolution(int resolution) {
+        userSelectedResolution = resolution;
+        userSelectedVideoId = VideoInformation.getVideoId();
+    }
 
     public static boolean shouldRememberVideoQuality() {
         BooleanSetting preference = ShortsPlayerState.isOpen()
@@ -89,16 +102,46 @@ public class RememberVideoQualityPatch {
     /**
      * Injection point.
      * <p>
+     * Called when a video is opened, before it starts.
+     *
+     * @return If the video must not be opened, always false.
+     */
+    public static boolean onVideoIntentLoaded(Map<Object, Object> playbackStartDescriptorMap, String videoId) {
+        if (!videoId.equals(userSelectedVideoId)) {
+            // Another video starts, so the next initial quality is not for a reload
+            // of the video the user selected the quality of.
+            userSelectedResolution = -1;
+        }
+        return false;
+    }
+
+    /**
+     * Injection point.
+     * <p>
      * Overrides the initial video quality to not follow the 'Video quality preferences' in YouTube settings.
      * (e.g. 'Auto (recommended)' - 360p/480p, 'Higher picture quality' - 720p/1080p...)
      * If the maximum video quality available is 1080p and the default video quality is 2160p,
      * 1080p is used as an initial video quality.
      */
     public static Optional getInitialVideoQuality(Optional optional) {
-        if (optional.isPresent() && VideoInformation.isQualitySelectedByUser()) {
-            // YouTube reloads the video with the quality selected by the user.
-            Logger.printDebug(() -> "initialVideoQuality selected by the user: " + optional.get());
-            return optional;
+        if (VideoInformation.isQualitySelectedByUser()) {
+            // YouTube can reload the video after the user selects a quality,
+            // such as when the new quality needs another decoder.
+            if (optional.isPresent()) {
+                Logger.printDebug(() -> "initialVideoQuality selected by the user: " + optional.get());
+                return optional;
+            }
+
+            // The reload can have no initial quality, and then the default quality
+            // would replace the quality the user selected. The video ID is not updated yet
+            // when another video starts, so the selected quality is cleared when another video
+            // is opened, and is not used once the player response of another video is received.
+            final int selectedResolution = userSelectedResolution;
+            if (selectedResolution > 0 && VideoInformation.getPlayerResponseVideoId()
+                    .equals(VideoInformation.getVideoId())) {
+                Logger.printDebug(() -> "initialVideoQuality selected by the user: " + selectedResolution);
+                return Optional.of(selectedResolution);
+            }
         }
 
         int preferredQuality = getDefaultQualityResolution();
@@ -112,15 +155,17 @@ public class RememberVideoQualityPatch {
     /**
      * Injection point.
      * <p>
-     * YouTube chooses the quality again while the video plays, such as when it loads more of the video.
-     * Without a quality selected in the quality menu, the quality is then chosen automatically
-     * (such as 720p for the size of the player), as the initial video quality is only used
-     * when the video starts. The default quality is used as a fixed quality for these choices too,
-     * until the user selects a quality.
+     * The initial video quality is only used when the video starts. While the video plays,
+     * the player and the SABR requests use the quality last selected in the quality menu,
+     * and without one the quality is chosen automatically (such as 720p for the size of the player).
+     * The default quality is used as the quality last selected, until the user selects a quality.
+     * With some accounts the quality last selected is used only for the video it was selected for,
+     * so the default quality is then used as if it was selected for the current video.
      *
-     * @return The fixed video quality resolution, or -1 to use the qualities chosen by YouTube.
+     * @return The resolution to use as the quality last selected,
+     *         or -1 to use the quality last selected in the quality menu.
      */
-    public static int getFixedVideoQuality() {
+    public static int getLastSelectedVideoQuality() {
         try {
             if (VideoInformation.isQualitySelectedByUser()) {
                 return -1;
@@ -131,7 +176,7 @@ public class RememberVideoQualityPatch {
                     ? -1
                     : preferredQuality;
         } catch (Exception ex) {
-            Logger.printException(() -> "getFixedVideoQuality failure", ex);
+            Logger.printException(() -> "getLastSelectedVideoQuality failure", ex);
             return -1;
         }
     }
@@ -144,14 +189,17 @@ public class RememberVideoQualityPatch {
         try {
             VideoInformation.userSelectedQuality();
 
+            VideoQualityInterface[] currentQualities = VideoInformation.getCurrentQualities();
+            if (currentQualities == null) {
+                Logger.printDebug(() -> "Cannot save default quality, qualities is null");
+                userSelectedResolution = -1;
+                return;
+            }
+            final int resolution = currentQualities[userSelectedQualityIndex].patch_getResolution();
+            setUserSelectedResolution(resolution);
+
             if (shouldRememberVideoQuality()) {
-                VideoQualityInterface[] currentQualities = VideoInformation.getCurrentQualities();
-                if (currentQualities == null) {
-                    Logger.printDebug(() -> "Cannot save default quality, qualities is null");
-                    return;
-                }
-                VideoQualityInterface quality = currentQualities[userSelectedQualityIndex];
-                saveDefaultQuality(quality.patch_getResolution());
+                saveDefaultQuality(resolution);
             }
         } catch (Exception ex) {
             Logger.printException(() -> "userChangedShortsQuality failure", ex);
@@ -173,6 +221,7 @@ public class RememberVideoQualityPatch {
         Utils.verifyOnMainThread();
         Logger.printDebug(() -> "User changed quality to: " + videoResolution);
         VideoInformation.userSelectedQuality();
+        setUserSelectedResolution(videoResolution);
 
         if (shouldRememberVideoQuality()) {
             saveDefaultQuality(videoResolution);
