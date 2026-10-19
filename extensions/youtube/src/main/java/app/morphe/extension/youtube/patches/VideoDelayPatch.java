@@ -1,6 +1,6 @@
 /*
  * Copyright 2026 Morphe.
- * https://github.com/MorpheApp/morphe-patches
+ * https://github.com/MorpheApp/morphe-patches/pull/3867
  *
  * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
  */
@@ -26,6 +26,10 @@ public class VideoDelayPatch {
     private static volatile boolean bluetoothAudioConnected;
     private static volatile boolean deviceCallbackRegistered;
     private static volatile int lastLoggedDelayMs;
+
+    public static boolean isPatchIncluded() {
+        return false; // Modified during patching.
+    }
 
     /**
      * Injection point.

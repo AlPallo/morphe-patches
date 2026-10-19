@@ -1,6 +1,6 @@
 /*
  * Copyright 2026 Morphe.
- * https://github.com/MorpheApp/morphe-patches
+ * https://github.com/MorpheApp/morphe-patches/pull/3867
  *
  * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
  */
@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.text.Editable;
@@ -23,6 +24,7 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -31,9 +33,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
 
 import app.morphe.extension.shared.Logger;
+import app.morphe.extension.shared.ResourceUtils;
 import app.morphe.extension.shared.Utils;
 import app.morphe.extension.shared.settings.preference.SeekBarPreference;
 import app.morphe.extension.shared.settings.preference.SeekBarPreference.SeekBarConfig;
@@ -41,6 +43,8 @@ import app.morphe.extension.shared.theme.ThemeUtils;
 import app.morphe.extension.shared.ui.Dim;
 import app.morphe.extension.shared.ui.SheetBottomDialog;
 import app.morphe.extension.youtube.patches.LegacyPlayerControlsPatch;
+import app.morphe.extension.youtube.patches.playback.speed.CustomPlaybackSpeedPatch;
+import app.morphe.extension.youtube.patches.utils.FlyoutUtils;
 import app.morphe.extension.youtube.settings.Settings;
 import app.morphe.extension.youtube.shared.PipDismissHelper;
 
@@ -58,15 +62,19 @@ public class VideoDelayDialogButton {
     public static void initializeButton(View controlsView) {
         try {
             if (LegacyPlayerControlsPatch.RESTORE_OLD_PLAYER_BUTTONS ||
-                    !Settings.VIDEO_DELAY_BUTTON.get()) {
+                    !Settings.VIDEO_DELAY_OVERLAY_BUTTON.get()) {
                 return;
             }
 
-            overlayTextRef = new WeakReference<>(PlayerOverlayButton.addButtonWithTextOverlay(
+            TextView overlay = PlayerOverlayButton.addButtonWithTextOverlay(
                     controlsView,
                     getOnClickListener(),
                     getOnLongClickListener()
-            ));
+            );
+            if (overlay != null) {
+                overlay.setSingleLine(true);
+            }
+            overlayTextRef = new WeakReference<>(overlay);
 
             updateButtonAppearance();
         } catch (Exception ex) {
@@ -89,7 +97,7 @@ public class VideoDelayDialogButton {
                     "morphe_video_delay_dialog_button",
                     "morphe_video_delay_dialog_button_text",
                     null,
-                    Settings.VIDEO_DELAY_BUTTON,
+                    Settings.VIDEO_DELAY_OVERLAY_BUTTON,
                     getOnClickListener(),
                     getOnLongClickListener()
             );
@@ -98,6 +106,27 @@ public class VideoDelayDialogButton {
         } catch (Exception ex) {
             Logger.printException(() -> "initializeLegacyButton failure", ex);
         }
+    }
+
+    /**
+     * Adds a menu item to the player settings flyout menu.
+     */
+    public static int addFlyoutButton(Object flyoutPanel, int nextButtonIndex, boolean isTopFlyout) {
+        if (Settings.VIDEO_DELAY_FLYOUT_BUTTON.get() && isTopFlyout) {
+            Drawable icon = ResourceUtils.getDrawable("morphe_ic_video_delay");
+
+            nextButtonIndex = FlyoutUtils.addFlyoutButton(
+                    flyoutPanel,
+                    icon,
+                    str("morphe_video_delay_title"),
+                    v -> {
+                        FlyoutUtils.dismissFlyout();
+                        showDialog(v.getContext());
+                    },
+                    nextButtonIndex
+            );
+        }
+        return nextButtonIndex;
     }
 
     private static View.OnClickListener getOnClickListener() {
@@ -143,13 +172,10 @@ public class VideoDelayDialogButton {
     }
 
     /**
-     * The button has room for about 4 characters, so longer delays are shown in seconds.
+     * The button has room for about 4 characters, so the delay is shown in milliseconds without a unit.
      */
     private static String formatButtonText(int delayMs) {
-        if (delayMs < 1000) {
-            return delayMs + "ms";
-        }
-        return String.format(Locale.ROOT, "%.1fs", delayMs / 1000f);
+        return String.valueOf(delayMs);
     }
 
     /**
@@ -188,10 +214,23 @@ public class VideoDelayDialogButton {
                     new PorterDuffColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN));
             slider.getThumb().setColorFilter(
                     new PorterDuffColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN));
-            LinearLayout.LayoutParams sliderParams = new LinearLayout.LayoutParams(
+            slider.setLayoutParams(new LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+            // The slider has too many steps to select each one by touch, so -/+ adjust by a single step.
+            Button minusButton = CustomPlaybackSpeedPatch.createStyledButton(context, false);
+            Button plusButton = CustomPlaybackSpeedPatch.createStyledButton(context, true);
+
+            LinearLayout sliderLayout = new LinearLayout(context);
+            sliderLayout.setOrientation(LinearLayout.HORIZONTAL);
+            sliderLayout.setGravity(Gravity.CENTER_VERTICAL);
+            LinearLayout.LayoutParams sliderLayoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            sliderParams.setMargins(0, Dim.dp8, 0, Dim.dp16);
-            slider.setLayoutParams(sliderParams);
+            sliderLayoutParams.setMargins(0, Dim.dp8, 0, Dim.dp16);
+            sliderLayout.setLayoutParams(sliderLayoutParams);
+            sliderLayout.addView(minusButton);
+            sliderLayout.addView(slider);
+            sliderLayout.addView(plusButton);
 
             EditText inputField = new EditText(context);
             inputField.setHint(str("morphe_video_delay_dialog_input_hint"));
@@ -272,8 +311,14 @@ public class VideoDelayDialogButton {
                 }
             });
 
+            // Changing the number field also saves the delay and moves the slider.
+            minusButton.setOnClickListener(v -> inputField.setText(String.valueOf(Math.max(config.min(),
+                    SeekBarPreference.clampToRange(Settings.VIDEO_DELAY) - config.step()))));
+            plusButton.setOnClickListener(v -> inputField.setText(String.valueOf(Math.min(config.max(),
+                    SeekBarPreference.clampToRange(Settings.VIDEO_DELAY) + config.step()))));
+
             contentLayout.addView(titleView);
-            contentLayout.addView(slider);
+            contentLayout.addView(sliderLayout);
             contentLayout.addView(fieldBox);
             mainLayout.addView(contentLayout);
 

@@ -1,6 +1,6 @@
 /*
  * Copyright 2026 Morphe.
- * https://github.com/MorpheApp/morphe-patches
+ * https://github.com/MorpheApp/morphe-patches/pull/3867
  *
  * See the included NOTICE file for GPLv3 Section 7 terms that apply to Morphe contributions.
  */
@@ -15,6 +15,9 @@ import app.morphe.patches.shared.misc.settings.preference.NonInteractivePreferen
 import app.morphe.patches.shared.misc.settings.preference.SwitchPreference
 import app.morphe.patches.youtube.layout.buttons.overlay.addPlayerOverlayPreferences
 import app.morphe.patches.youtube.layout.buttons.overlay.playerOverlayButtonsSettingsPatch
+import app.morphe.patches.youtube.layout.flyout.flyoutPatch
+import app.morphe.patches.youtube.layout.hide.player.flyoutmenu.addPlayerFlyoutMenuPreferences
+import app.morphe.patches.youtube.layout.hide.player.flyoutmenu.playerFlyoutPreferences
 import app.morphe.patches.youtube.layout.player.buttons.addPlayerBottomButton
 import app.morphe.patches.youtube.layout.player.buttons.playerOverlayButtonsHookPatch
 import app.morphe.patches.youtube.misc.extension.sharedExtensionPatch
@@ -24,6 +27,9 @@ import app.morphe.patches.youtube.misc.playercontrols.legacyPlayerControlsPatch
 import app.morphe.patches.youtube.misc.settings.PreferenceScreen
 import app.morphe.patches.youtube.misc.settings.settingsPatch
 import app.morphe.patches.youtube.shared.Constants.COMPATIBILITY_YOUTUBE
+import app.morphe.util.ResourceGroup
+import app.morphe.util.copyResources
+import app.morphe.util.setExtensionIsPatchIncluded
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 
 private const val EXTENSION_CLASS_DESCRIPTOR =
@@ -40,6 +46,11 @@ private val videoDelayResourcePatch = resourcePatch {
 
     execute {
         addLegacyBottomControl("videodelaybutton")
+
+        copyResources(
+            "videodelaybutton",
+            ResourceGroup("drawable", "morphe_ic_video_delay.xml")
+        )
 
         document("AndroidManifest.xml").use { document ->
             val receiver = document.createElement("receiver").apply {
@@ -71,6 +82,8 @@ val videoDelayPatch = bytecodePatch(
         playerOverlayButtonsSettingsPatch,
         playerOverlayButtonsHookPatch,
         legacyPlayerControlsPatch,
+        playerFlyoutPreferences,
+        flyoutPatch,
         videoDelayResourcePatch
     )
 
@@ -86,11 +99,16 @@ val videoDelayPatch = bytecodePatch(
         )
 
         addPlayerOverlayPreferences(
-            SwitchPreference("morphe_video_delay_button", summary = true)
+            SwitchPreference("morphe_video_delay_button_overlay", summary = true)
+        )
+        addPlayerFlyoutMenuPreferences(
+            SwitchPreference("morphe_video_delay_button_flyout")
         )
 
         addPlayerBottomButton(EXTENSION_BUTTON)
         initializeLegacyBottomControl(EXTENSION_BUTTON)
+
+        setExtensionIsPatchIncluded(EXTENSION_CLASS_DESCRIPTOR)
 
         // Video frames are released when the audio clock reaches their timestamp,
         // so reporting an earlier audio position holds every frame back by the same amount.
