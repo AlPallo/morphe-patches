@@ -121,7 +121,7 @@ Second \"item\" text"</string>
   <string name="morphe_hide_video_thumbnail_title">隐藏视频缩略图</string>
   <!-- 'Auto-dubbed', 'Earns commission', 'Hyped', 'People also watched' and 'You might also like' should be translated using the same localized wording YouTube displays for the label. -->
   <string name="morphe_hide_video_labels_title">隐藏视频标签</string>
-  <string name="morphe_hide_video_labels_summary">隐藏“自动配音”/“配音”、“赚取佣金”、“热门”、“大家还看了”、“商品<b>(</b>s)”和“你可能还喜欢”等标签</string>
+  <string name="morphe_hide_video_labels_summary">隐藏“自动配音”/“配音”、“赚取佣金”、“热门”、“大家还看了”、“商品”和“你可能还喜欢”等标签</string>
   <string name="morphe_hide_view_count_title">隐藏观看次数</string>
   <!-- Translations should match the language used in 'morphe_hide_upload_time_summary'. -->
   <string name="morphe_hide_view_count_summary">"限制：
@@ -132,7 +132,7 @@ Second \"item\" text"</string>
   <string name="morphe_hide_you_may_like_section_title">隐藏“您可能喜欢”的部分</string>
   <!-- https://logos.fandom.com/wiki/YouTube/Yoodles -->
   <string name="morphe_hide_youtube_doodles_title">隐藏 YouTube 涂鸦</string>
-  <string name="morphe_hide_youtube_doodles_summary">隐藏 YouTube logo上的季节性和活动相关的动画</string>
+  <string name="morphe_hide_youtube_doodles_summary">隐藏 YouTube logo 上的季节性和活动相关的动画</string>
   <string name="morphe_hide_youtube_doodles_user_dialog_message">显示 YouTube Doodles 可能会阻止自定义标题的显示</string>
   <string name="morphe_hide_channel_bar_title">隐藏频道栏</string>
   <string name="morphe_hide_channel_watermark_title">隐藏频道水印</string>
@@ -161,14 +161,14 @@ Second \"item\" text"</string>
   <string name="morphe_hide_timed_reactions_title">隐藏限时反应</string>
   <string name="morphe_hide_timed_reactions_summary">隐藏评论区和直播聊天中用表情符号互动的功能</string>
   <!-- 'Help & feedback' should be translated using the same localized wording YouTube displays for the menu item. -->
-  <string name="morphe_hide_help_feedback_menu_title">隐藏“帮助 &amp; 反馈”菜单</string>
-  <string name="morphe_hide_help_feedback_menu_summary">使用三点按钮时，例如在搜索结果中，隐藏“帮助 &amp; 反馈”菜单</string>
-  <string name="morphe_hide_handle_title">隐藏句柄</string>
-  <string name="morphe_hide_handle_summary">在“You”标签页中隐藏你的频道句柄</string>
+  <string name="morphe_hide_help_feedback_menu_title">隐藏“帮助和反馈”菜单</string>
+  <string name="morphe_hide_help_feedback_menu_summary">使用三点按钮时，例如在搜索结果中，隐藏“帮助和反馈”菜单</string>
+  <string name="morphe_hide_handle_title">隐藏标识名</string>
+  <string name="morphe_hide_handle_summary">在“我”标签页中隐藏你的频道标识名</string>
   <string name="morphe_hide_video_title_title">隐藏视频标题</string>
   <string name="morphe_hide_video_title_summary">隐藏全屏模式下的视频标题</string>
   <string name="morphe_sanitize_video_subtitle_title">清理视频字幕</string>
-  <string name="morphe_sanitize_video_subtitle_summary">清除视频副标题中的“#”、“筹款活动”、“商品<b>(</b>s)”和“商店”等短语</string>
+  <string name="morphe_sanitize_video_subtitle_summary">清除视频副标题中的“#”、“筹款活动”、“商品”和“商店”等短语</string>
   <string name="morphe_hide_ask_gemini_button_title">隐藏“Ask Gemini”按钮</string>
   <string name="morphe_hide_ask_gemini_button_summary">隐藏“就此视频提问”面板底部的“Ask Gemini”按钮</string>
   <string name="morphe_hide_description_components_screen_title">视频说明</string>
@@ -444,7 +444,7 @@ Second \"item\" text"</string>
   <string name="morphe_external_downloader_title">显示外部下载按钮</string>
   <string name="morphe_external_downloader_summary">在视频播放器中显示一个浮动按钮，用于打开您的外部下载器</string>
   <!-- 'Download' should be translated using the same localized wording YouTube displays for the button. -->
-  <string name="morphe_external_downloader_action_button_title">覆盖「下载」按钮和菜单</string>
+  <string name="morphe_external_downloader_action_button_title">覆盖下载按钮和菜单</string>
   <string name="morphe_external_downloader_action_button_summary">使用您选择的外部下载器，而不是自带的下载功能。</string>
   <!-- video.voiceovertranslation.voiceOverTranslationPatch -->
   <string name="morphe_vot_screen_title">语音旁白翻译</string>
@@ -643,11 +643,11 @@ Second \"item\" text"</string>
   <string name="morphe_tap_to_seek_title">启用点按进度条</string>
   <string name="morphe_tap_to_seek_summary">只需点击进度条即可跳转到该位置，而无需拖动</string>
   <!-- interaction.swipecontrols.swipeControlsPatch -->
-  <string name="morphe_swipe_left_zone_title">Left swipe gesture</string>
-  <string name="morphe_swipe_right_zone_title">Right swipe gesture</string>
-  <string name="morphe_swipe_top_zone_title">Top swipe gesture</string>
-  <string name="morphe_swipe_zone_width_title">Left/Right zone width</string>
-  <string name="morphe_swipe_zone_width_summary">Percentage of each screen edge reserved for left and right swipe gestures (5-50)</string>
+  <string name="morphe_swipe_left_zone_title">左侧滑动手势</string>
+  <string name="morphe_swipe_right_zone_title">右侧滑动手势</string>
+  <string name="morphe_swipe_top_zone_title">顶部滑动手势</string>
+  <string name="morphe_swipe_zone_width_title">左/右区域宽度</string>
+  <string name="morphe_swipe_zone_width_summary">屏幕左右边缘留给左侧和右侧滑动手势的百分比 (5-50)</string>
   <string name="morphe_swipe_zone_label_brightness">亮度</string>
   <string name="morphe_swipe_zone_label_volume">音量</string>
   <string name="morphe_swipe_zone_label_native">原生</string>
@@ -812,7 +812,7 @@ Second \"item\" text"</string>
   <string name="morphe_hide_navigation_button_labels_title">隐藏导航栏按钮标签</string>
   <string name="morphe_hide_navigation_new_content_dot_title">隐藏新内容圆点</string>
   <string name="morphe_hide_navigation_bar_title">隐藏导航栏</string>
-  <string name="morphe_hide_navigation_bar_user_dialog_message">"这将完全隐藏导航栏，包括“你”标签页。
+  <string name="morphe_hide_navigation_bar_user_dialog_message">"这将完全隐藏导航栏，包括“我”标签页。
 
 要访问设置，请通过 常规 → 工具栏 → 显示设置 启用设置按钮"</string>
   <string name="morphe_narrow_navigation_buttons_title">启用狭窄导航按钮</string>
@@ -1202,7 +1202,7 @@ Second \"item\" text"</string>
   <!-- 'Subscriptions' should be translated using the same localized wording YouTube displays for the tab. -->
   <string name="morphe_dearrow_titles_subscription_title">订阅标签页</string>
   <!-- 'You' should be translated using the same localized wording YouTube displays for the tab. -->
-  <string name="morphe_dearrow_titles_library_title">「我」标签</string>
+  <string name="morphe_dearrow_titles_library_title">“我”标签</string>
   <string name="morphe_dearrow_titles_player_title">播放器播放列表&amp;推荐</string>
   <string name="morphe_dearrow_titles_search_title">搜索结果</string>
   <string name="morphe_dearrow_titles_icon_title">显示DeArrow图标</string>
@@ -1311,10 +1311,10 @@ Second \"item\" text"</string>
   <string name="morphe_playback_speed_channel_whitelist_flyout_add">将频道添加到播放速度白名单</string>
   <string name="morphe_playback_speed_channel_whitelist_flyout_remove">从播放速度白名单中移除频道</string>
   <string name="morphe_enable_playback_audio_pitch_controls_title">启用音频音高控制</string>
-  <string name="morphe_playback_audio_pitch_default_title">Default playback audio pitch</string>
-  <string name="morphe_remember_playback_audio_pitch_toast">Changed default audio pitch to: %s</string>
-  <string name="morphe_playback_audio_time_stretching_title">Audio time stretching</string>
-  <string name="morphe_playback_audio_time_stretching_summary">Allows setting speed and pitch independently, may cause audio artifacts</string>
+  <string name="morphe_playback_audio_pitch_default_title">默认播放音频音高</string>
+  <string name="morphe_remember_playback_audio_pitch_toast">已将默认音频音高更改为: %s</string>
+  <string name="morphe_playback_audio_time_stretching_title">音频时间拉伸</string>
+  <string name="morphe_playback_audio_time_stretching_summary">支持独立调节速度和音高，可能会造成音频失真</string>
   <!-- video.livestream.rememberLiveStreamPositionPatch -->
   <string name="morphe_remember_live_stream_position_title">记住直播播放位置</string>
   <string name="morphe_remember_live_stream_position_summary">对于正在进行的直播，会记住并恢复您的播放位置，而不是跳转到当前的直播位置。</string>

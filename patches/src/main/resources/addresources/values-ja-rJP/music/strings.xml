@@ -518,12 +518,12 @@ SABR再生（動画ストリームのスプーフがオフ）"</string>
   <string name="morphe_music_lyrics_show_translate_button_summary">タップで翻訳を切り替え、長押しで翻訳のみ表示します。プロバイダー提供の翻訳、Google翻訳、またはOpenAI互換APIを使用します。</string>
   <string name="morphe_music_lyrics_show_romanize_button_title">ローマ字化ボタンを表示</string>
   <string name="morphe_music_lyrics_show_romanize_button_summary">タップでローマ字表記を切り替え、長押しでローマ字表記のみ表示します。プロバイダー提供のローマ字表記、Google翻訳、またはOpenAI互換APIを使用します。</string>
-  <string name="morphe_music_lyrics_local_romanization_title">ローマ字表記</string>
-  <string name="morphe_music_lyrics_local_romanization_summary">プロバイダー、OpenAI互換エンドポイント、Google翻訳のすべてが失敗した場合にデバイス上でローマ字に変換します。CJKのみ対応。約80MBの読み仮名データをダウンロードする必要があります。</string>
+  <string name="morphe_music_lyrics_local_romanization_title">ローカルでの歌詞のローマ字変換</string>
+  <string name="morphe_music_lyrics_local_romanization_summary">外部サービス、OpenAI 互換 API、Google 翻訳のすべてで失敗したときに、デバイス上で歌詞をローマ字に変換します。CJK文字 (中国語、日本語、韓国語) のみが変換の対象になります。文字の読みデータ (約 80 MB) のダウンロードが必要です。</string>
   <string name="morphe_music_lyrics_local_romanization_dict_downloading">%1$s: %2$d%%</string>
-  <string name="morphe_music_lyrics_local_romanization_dict_building">読み仮名 %1$s: %2$d%%</string>
-  <string name="morphe_music_lyrics_local_romanization_dict_ready">読み仮名準備完了 (%1$d CJK単語)</string>
-  <string name="morphe_music_lyrics_local_romanization_dict_failed">ダウンロードに失敗しました — 再試行するにはこれをオフにしてからオンに戻してください</string>
+  <string name="morphe_music_lyrics_local_romanization_dict_building">%1$s を読み込み中: %2$d%%</string>
+  <string name="morphe_music_lyrics_local_romanization_dict_ready">文字の読みデータのインストール完了 (CJK 文字 %1$d 単語)</string>
+  <string name="morphe_music_lyrics_local_romanization_dict_failed">ダウンロードに失敗しました。再試行するにはこの設定を一旦オフにしてから再度オンにしてください</string>
   <string name="morphe_music_lyrics_show_refresh_button_title">更新ボタンを表示</string>
   <string name="morphe_music_lyrics_show_refresh_button_summary">タップして次の歌詞候補に切り替え、長押しして曲名とアーティストで歌詞を検索します</string>
   <string name="morphe_music_lyrics_search_dialog_title">歌詞を検索</string>
@@ -534,7 +534,7 @@ SABR再生（動画ストリームのスプーフがオフ）"</string>
   <string name="morphe_music_lyrics_saved">保存しました</string>
   <string name="morphe_music_lyrics_word_sync_title">同期された単語または音節をハイライト</string>
   <string name="morphe_music_lyrics_word_sync_summary">利用可能な場合は単語ごとの歌詞を優先します。歌詞に単語タイミングがある場合、音楽に合わせて各単語または音節をハイライトします</string>
-  <string name="morphe_music_lyrics_split_background_title">背景ボーカルを分離して表示</string>
+  <string name="morphe_music_lyrics_split_background_title">コーラスを分離して表示</string>
   <string name="morphe_music_lyrics_split_background_summary">（Oh）I want you のように括弧で囲まれた背景ボーカルを、歌われる歌詞行から外して独立した暗めの行へと移動します</string>
   <string name="morphe_music_lyrics_hide_played_title">再生済み […] 行を非表示</string>
   <string name="morphe_music_lyrics_hide_played_summary">現在再生中の行より上の歌詞行を非表示にする</string>
